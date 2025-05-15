@@ -32,5 +32,29 @@ public class WarehouseController(IWarehouseService warehouseService) : Controlle
         return Ok(res.Message);
         
     }
+
+    [HttpPost("fulfilled/asStoredProcedure")]
+    public async Task<IActionResult> RegisterProductFulfilledSp([FromBody] ProductWarehouseDto productWarehouseDto)
+    {
+        if (productWarehouseDto.Amount <= 0) 
+            return BadRequest("Amount must be greater than zero");
+
+        WarehouseServiceResult res;
+        try
+        {
+            res = await warehouseService.ProcedureAsync(productWarehouseDto);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        if (!res.Success)
+        {
+            return BadRequest(res.Message);
+        }
+        
+        return Ok(res.Message);
+    }
     
 }

@@ -12,3 +12,16 @@ Content-Type: application/json
 }
 
 ###
+
+POST {{Tutorial9_HostAddress}}/api/Warehouse/fulfilled/asStoredProcedure
+Accept: application/json
+Content-Type: application/json
+
+{
+  "IdProduct": 1,
+  "IdWarehouse": 1,
+  "Amount": 125,
+  "CreatedAt": "2032-04-23T18:25:43.511Z"
+}
+
+###

@@ -147,13 +147,29 @@ public class WarehouseService(IConfiguration configuration) : IWarehouseService
         command.Connection = connection;
         await connection.OpenAsync();
         
-        command.CommandText = "NazwaProcedury";
+        command.CommandText = "AddProductToWarehouse";
         command.CommandType = CommandType.StoredProcedure;
         
-        command.Parameters.AddWithValue("@Id", 2);
+        command.Parameters.AddWithValue("@IdProduct", product.IdProduct);
+        command.Parameters.AddWithValue("@IdWarehouse", product.IdWarehouse);
+        command.Parameters.AddWithValue("@Amount", product.Amount);
+        command.Parameters.AddWithValue("@CreatedAt", product.CreatedAt);
         
-        await command.ExecuteNonQueryAsync();
+        object? res;
+        try
+        {
+            res = await command.ExecuteScalarAsync();
+        }
+        catch (SqlException sqlEx) // this is definitely NOT a good way, but idk how to do it properly
+        {
+            // TODO: re-consider this part
+            // i was thinking catching the procedure RAISERROR value or message somehow specifically, and only when its our RAISERROR, print it to the user.
+            // otherwise we can expose unwanted stuff to the user.
+            return new WarehouseServiceResult(false, sqlEx.Message); 
+        }
         
-        throw new NotImplementedException();
+        var createdId = Convert.ToInt32(res);
+        
+        return new WarehouseServiceResult(true, createdId.ToString());
     }
 }
